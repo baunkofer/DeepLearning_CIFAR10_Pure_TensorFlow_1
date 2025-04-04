@@ -12,6 +12,11 @@ from tensorflow.keras import datasets, layers, models
 import matplotlib.pyplot as plt
 
 # Eager Mode aktivieren (WICHTIG für model.fit)
+"""TensorFlow kann im "Eager Execution Mode" oder im "Graph Mode" arbeiten:
+
+    Eager Mode: Standard in TensorFlow 2.x, erlaubt direktes Debugging und Python-typische Iterationen.
+    Graph Mode: Optimierter Rechenmodus, aber restriktiver – z. B. kein direktes Iterieren über tf.data.Dataset.
+"""
 tf.config.run_functions_eagerly(True)
 
 # CIFAR-10 laden
@@ -66,3 +71,27 @@ plt.show()
 
 test_loss, test_acc = model.evaluate(x_test, y_test, verbose=2)
 print(f"Test Accuracy: {test_acc:.4f}")
+
+
+"""
+    Confusion Matrix
+"""
+
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+import numpy as np
+
+# 🔮 Vorhersagen berechnen
+y_pred_probs = model.predict(x_test)
+y_pred = np.argmax(y_pred_probs, axis=1)
+
+# ✅ Confusion Matrix berechnen
+cm = confusion_matrix(y_test, y_pred)
+
+# 🖼 Visualisierung
+labels = ['airplane', 'automobile', 'bird', 'cat', 'deer',
+          'dog', 'frog', 'horse', 'ship', 'truck']
+
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
+disp.plot(cmap='Blues', xticks_rotation=45)
+plt.title("Confusion Matrix – CIFAR-10")
+plt.show()
